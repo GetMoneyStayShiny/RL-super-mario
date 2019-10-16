@@ -4,7 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
-from model import FCNet, ConvNet, Policy, FullyConnectedNet
+from model import FullyConnectedNet, ProxyPolicyNet
 
 
 
@@ -21,8 +21,9 @@ class PPOAgent:
 
         #self.main_net = ConvNet(state_size, feature_dim, seed, use_reset, input_channel).to(device)
         #self.main_net = FCNet(state_size, seed, hidden_layers=[64,64], use_reset=True, act_fnc=F.relu).to(device)
-        self.main_net = FullyConnectedNet(seed, 4, 1, 1).to(device)
-       	self.policy = Policy(state_size, action_size, seed, self.main_net).to(device)
+        self.main_net = FullyConnectedNet(seed, 4, 64, 64).to(device)
+       	#self.policy = Policy(state_size, action_size, seed, self.main_net).to(device)
+        self.policy = ProxyPolicyNet(seed, action_size, self.main_net).to(device)
         self.optimizer = optim.Adam(self.policy.parameters(), lr=lr_policy)
         self.device = device
         #print(state_size)
